@@ -1,0 +1,2 @@
+# cucon
+Simple currency converter
