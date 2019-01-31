@@ -60,7 +60,7 @@ public class FiatFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment, container, false);
+        View view = inflater.inflate(R.layout.fragment_fiat, container, false);
 
         currency1 = view.findViewById(R.id.currency1);
         currency2 = view.findViewById(R.id.currency2);

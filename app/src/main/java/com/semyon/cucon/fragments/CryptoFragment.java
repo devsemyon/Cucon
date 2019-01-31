@@ -34,18 +34,14 @@ import static com.semyon.cucon.HttpRequestsKt.requestCurrencies;
 
 public class CryptoFragment extends Fragment {
 
-    public ArrayAdapter<String> adapter1, adapter2;
-    public Context context;
-    public InstantAutoComplete currency1, currency2;
+    private Context context;
+    private InstantAutoComplete currency1, currency2;
     private EditText rate1, rate2;
     private Float rate; // переменная для хранения курса
-    private SharedPreferences sharedPref;
-    private SharedPreferences.Editor editor;
     private TextView mode;
     private JSONObject cryptoRates;
-    private ImageButton switchCurrencies;
-    public ArrayList<String> cryptoCurrencies = new ArrayList<>();
-    View view;
+    private ArrayList<String> cryptoCurrencies = new ArrayList<>();
+    private ArrayList<String> cryptoCurrencies2 = new ArrayList<>();
 
     public CryptoFragment() {
         // Required empty public constructor
@@ -61,7 +57,7 @@ public class CryptoFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        view = inflater.inflate(R.layout.fragment, container, false);
+        View view = inflater.inflate(R.layout.fragment_crypto, container, false);
 
         currency1 = view.findViewById(R.id.currency1);
         currency2 = view.findViewById(R.id.currency2);
@@ -71,25 +67,23 @@ public class CryptoFragment extends Fragment {
         rate1 = view.findViewById(R.id.rate1);
         rate2 = view.findViewById(R.id.rate2);
 
-        sharedPref = getContext().getSharedPreferences("pref", Context.MODE_PRIVATE);
-        editor = sharedPref.edit();
-
-        cryptoCurrencies.add("USD");
         cryptoCurrencies.add("BTC");
-        cryptoCurrencies.add("DASH");
-        cryptoCurrencies.add("ZEC");
-        cryptoCurrencies.add("RUB");
-        cryptoCurrencies.add("WAVES");
         cryptoCurrencies.add("ETH");
         cryptoCurrencies.add("LTC");
-        cryptoCurrencies.add("EUR");
+        cryptoCurrencies.add("DASH");
         cryptoCurrencies.add("EOS");
+        cryptoCurrencies.add("WAVES");
+        cryptoCurrencies.add("ZEC");
+
+        cryptoCurrencies2.add("USD");
+        cryptoCurrencies2.add("RUB");
+        cryptoCurrencies2.add("EUR");
 
         cryptoRates = requestCryptoRates();
         //addAddapters(cryptoCurrencies);
 
-        adapter1 = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, cryptoCurrencies);
-        adapter2 = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, cryptoCurrencies);
+        ArrayAdapter<String> adapter1 = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, cryptoCurrencies);
+        ArrayAdapter<String> adapter2 = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, cryptoCurrencies2);
 
         currency1.setAdapter(adapter1);
         currency1.setTokenizer(new SimpleTokenizer());
@@ -117,7 +111,7 @@ public class CryptoFragment extends Fragment {
             }
         });
 
-        switchCurrencies = view.findViewById(R.id.switchCurrencies);
+        ImageButton switchCurrencies = view.findViewById(R.id.switchCurrencies);
         switchCurrencies.setOnClickListener(switchCurrenciesClick);
 
         return view;
@@ -141,7 +135,7 @@ public class CryptoFragment extends Fragment {
 
     private void showDialogNoOffline() {
         AlertDialog.Builder builder;
-        builder = new AlertDialog.Builder(getActivity().getApplicationContext(), R.style.Theme_MaterialComponents_Bridge);
+        builder = new AlertDialog.Builder(context, R.style.Theme_MaterialComponents_Bridge);
         builder.setTitle("Нет интернета!")
                 .setMessage("Чтобы использовать приложение в оффлайне вам необходимо зайти в него хотя бы один раз с интернетом.")
                 .setPositiveButton("Выйти", new DialogInterface.OnClickListener() {
@@ -157,7 +151,7 @@ public class CryptoFragment extends Fragment {
     // меняем валюты местами
     View.OnClickListener switchCurrenciesClick = new View.OnClickListener() {
         public void onClick(View v) {
-            if (currency1.getText().length() == 3 && currency2.getText().length() == 3) {
+            if (currency1.getText().length() >= 3 && currency2.getText().length() >= 3) {
                 try {
                     String c1 = currency1.getText().toString();
                     String c2 = currency2.getText().toString();
@@ -187,7 +181,7 @@ public class CryptoFragment extends Fragment {
             }
         } else if (id == currency1.getId() || id == currency2.getId()) {
 
-            if (currency1.getText().length() == 3 && currency2.getText().length() == 3) {
+            if (currency1.getText().length() >= 3 && currency2.getText().length() >= 3) {
 
                 String crypto1 = currency1.getText().toString().toUpperCase();
                 String crypto2 = currency2.getText().toString().toUpperCase();
@@ -233,9 +227,6 @@ public class CryptoFragment extends Fragment {
         return t != null;
     }
 
-    void addAddapters(ArrayList<String> menu_currencies) {
-    }
-
     class GenericTextWatcher implements TextWatcher {
 
         private View view;
@@ -250,20 +241,20 @@ public class CryptoFragment extends Fragment {
         public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
             switch (view.getId()) {
                 case R.id.currency1:
-                    if (currency1.getText().length() == 3) {
+                    if (currency1.getText().length() >= 3) {
                         if (cryptoCurrencies.contains(currency1.getText().toString().toUpperCase())) {
                             count(view.getId());
                         } else {
-                            Toast.makeText(getContext(), "Такой валюты не существует ;(", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, "Такой валюты не существует ;(", Toast.LENGTH_SHORT).show();
                         }
                     }
                     break;
                 case R.id.currency2:
-                    if (currency2.getText().length() == 3) {
-                        if (cryptoCurrencies.contains(currency2.getText().toString().toUpperCase())) {
+                    if (currency2.getText().length() >= 3) {
+                        if (cryptoCurrencies2.contains(currency2.getText().toString().toUpperCase())) {
                             count(view.getId());
                         } else {
-                            Toast.makeText(getContext(), "Такой валюты не существует ;(", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, "Такой валюты не существует ;(", Toast.LENGTH_SHORT).show();
                         }
                     }
                     break;

@@ -7,7 +7,7 @@ import java.net.HttpURLConnection
 import java.net.URI
 
 fun requestCryptoRates(): JSONObject{
-    return(request("https://min-api.cryptocompare.com/data/pricemulti?fsyms=BTC,ETH,DASH,ZEC,LTC,WAVES,EOS&tsyms=USD,EUR,RUB&api_key=8904015cdd5a1092f6cfeef94f3f37344369c8f4f2945a3ab6e44e263af20809"))
+    return(request("https://min-api.cryptocompare.com/data/pricemulti?fsyms=BTC,ETH,DASH,ZEC,LTC,WAVES,EOS&tsyms=USD,EUR,RUB&api_key=$apiCryptoKey"))
 }
 
 fun requestRate(pair: String): Float? {

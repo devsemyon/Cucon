@@ -1,7 +1,7 @@
 *.iml
 
 .idea
-
+/app/src/main/java/com/semyon/cucon/Configs.kt
 .DS_Store
 /build
 /captures
