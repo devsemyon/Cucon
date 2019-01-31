@@ -6,6 +6,10 @@ import java.lang.Exception
 import java.net.HttpURLConnection
 import java.net.URI
 
+fun requestCryptoRates(): JSONObject{
+    return(request("https://min-api.cryptocompare.com/data/pricemulti?fsyms=BTC,ETH,DASH,ZEC,LTC,WAVES,EOS&tsyms=USD,EUR,RUB&api_key=8904015cdd5a1092f6cfeef94f3f37344369c8f4f2945a3ab6e44e263af20809"))
+}
+
 fun requestRate(pair: String): Float? {
     val result = request("https://free.currencyconverterapi.com/api/v6/convert?q=" + pair + "&compact=ultra")
     try {
