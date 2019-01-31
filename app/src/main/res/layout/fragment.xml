@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TableRow>
+
+        <com.semyon.cucon.InstantAutoComplete
+            android:id="@+id/currency1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:hint="@string/choose_currency"
+            android:maxLength="3"
+            android:layout_weight="1"
+            android:textAlignment="center" />
+
+        <ImageButton
+            android:layout_weight="1"
+            android:id="@+id/switchCurrencies"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:adjustViewBounds="true"
+            android:background="@null"
+            android:clickable="true"
+            android:focusable="true"
+            android:src="@drawable/swap"
+            android:tint="@color/colorPrimary" />
+
+        <com.semyon.cucon.InstantAutoComplete
+            android:id="@+id/currency2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:hint="@string/choose_currency"
+            android:maxLength="3"
+            android:layout_weight="1"
+            android:textAlignment="center" />
+
+    </TableRow>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="15sp"/>
+
+    <TableRow>
+
+        <EditText
+            android:id="@+id/rate1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="numberDecimal"
+            android:text="1"
+            android:layout_weight="1"
+            android:textAlignment="center" />
+
+        <ImageButton
+            android:id="@+id/equal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:adjustViewBounds="true"
+            android:background="@null"
+            android:clickable="true"
+            android:focusable="true"
+            android:scaleType="center"
+            android:src="@drawable/equal"
+            android:tint="@color/colorPrimary" />
+
+        <EditText
+            android:id="@+id/rate2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:inputType="numberDecimal"
+            android:textAlignment="center" />
+    </TableRow>
+
+    <TextView
+        android:id="@+id/mode"
+        android:paddingTop="25sp"
+        android:layout_width="wrap_content"
+        android:textAlignment="center"
+        android:text=""
+        android:textSize="22sp"
+        android:layout_height="match_parent" />
+
+</TableLayout>
