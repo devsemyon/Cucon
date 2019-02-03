@@ -1,9 +1,9 @@
 <resources>
     <string name="app_name">Cucon</string>
     <string name="choose_currency">
-        <font size="16">Выберите валюту</font></string>
+        <font size="16">Choose currency</font></string>
     <string name="title_activity_settings">Настройки</string>
-    <string name="appVersion">Версия: 0.1.1 BETA</string>
+    <string name="appVersion">Версия: 0.1.2 BETA</string>
     <string name="title_activity_main2">MainActivity2</string>
     <string name="tab_text_1">Фиат</string>
     <string name="tab_text_2">Криптовалюта</string>

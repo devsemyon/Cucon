@@ -1,5 +1,6 @@
 package com.semyon.cucon.fragments;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -19,21 +20,29 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
+import com.semyon.cucon.Font;
 import com.semyon.cucon.InstantAutoComplete;
 import com.semyon.cucon.R;
 import com.semyon.cucon.SimpleTokenizer;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import io.fabric.sdk.android.Fabric;
+import io.github.inflationx.calligraphy3.CalligraphyConfig;
+import io.github.inflationx.calligraphy3.CalligraphyInterceptor;
+import io.github.inflationx.viewpump.ViewPump;
+
 import static com.semyon.cucon.HttpRequestsKt.requestCurrencies;
 import static com.semyon.cucon.HttpRequestsKt.requestRate;
 
 public class FiatFragment extends Fragment {
 
-    private ArrayAdapter<String> adapter1, adapter2;
     private Context context;
     private InstantAutoComplete currency1;
     private InstantAutoComplete currency2;
@@ -42,9 +51,7 @@ public class FiatFragment extends Fragment {
     private ArrayList<String> currencies = new ArrayList<>();
     private SharedPreferences sharedPref;
     private SharedPreferences.Editor editor;
-    private Set<String> set;
     private TextView mode;
-    private ImageButton switchCurrencies;
 
     public FiatFragment() {
         // Required empty public constructor
@@ -52,12 +59,13 @@ public class FiatFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState);;
         context = this.getActivity();
+        Fabric.with(context, new Crashlytics());
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_fiat, container, false);
@@ -74,7 +82,7 @@ public class FiatFragment extends Fragment {
         editor = sharedPref.edit();
 
         if (!isInternet()) {
-            set = sharedPref.getStringSet("currencies", null);
+            Set<String> set = sharedPref.getStringSet("currencies", null);
             if (set == null || set.isEmpty()) {
                 showDialogNoOffline();
             } else {
@@ -115,7 +123,7 @@ public class FiatFragment extends Fragment {
             }
         });
 
-        switchCurrencies = view.findViewById(R.id.switchCurrencies);
+        ImageButton switchCurrencies = view.findViewById(R.id.switchCurrencies);
         switchCurrencies.setOnClickListener(switchCurrenciesClick);
 
         return view;
@@ -123,6 +131,7 @@ public class FiatFragment extends Fragment {
 
     // показываем валюты при нажатие на поля
     View.OnTouchListener showCurrencies = new View.OnTouchListener() {
+        @SuppressLint("ClickableViewAccessibility")
         @Override
         public boolean onTouch(View v, MotionEvent event) {
             switch (v.getId()) {
@@ -139,7 +148,15 @@ public class FiatFragment extends Fragment {
 
     private void showDialogNoOffline() {
         AlertDialog.Builder builder;
-        builder = new AlertDialog.Builder(context, R.style.AppTheme);
+
+        // узнаём какая тема задана в настройках
+        boolean darkTheme = sharedPref.getBoolean("dark_theme", false); // the second parameter will be fallback if the preference is not found
+        if (darkTheme) {
+            builder = new AlertDialog.Builder(context, R.style.AppThemeDark);
+        } else {
+            builder = new AlertDialog.Builder(context, R.style.AppThemeLight);
+        }
+
         builder.setTitle("Нет интернета!")
                 .setMessage("Чтобы использовать приложение в оффлайне вам необходимо зайти в него хотя бы один раз с интернетом.")
                 .setPositiveButton("Выйти", new DialogInterface.OnClickListener() {
@@ -224,10 +241,11 @@ public class FiatFragment extends Fragment {
         return t != null;
     }
 
-    void addAddapters(ArrayList<String> menu_currencies) {
+    @SuppressLint("ClickableViewAccessibility")
+    private void addAddapters(ArrayList<String> menu_currencies) {
 
-        adapter1 = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, menu_currencies);
-        adapter2 = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, menu_currencies);
+        ArrayAdapter<String> adapter1 = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, menu_currencies);
+        ArrayAdapter<String> adapter2 = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, menu_currencies);
 
         currency1.setAdapter(adapter1);
         currency1.setTokenizer(new SimpleTokenizer());

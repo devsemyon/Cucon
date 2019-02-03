@@ -62,4 +62,6 @@ fastlane/screenshots
 fastlane/test_output
 fastlane/readme.md
 .gradle/
-app/build
+app/buildconfigs.xml
+/app/google-services.json
+/app/src/main/res/values/configs.xml

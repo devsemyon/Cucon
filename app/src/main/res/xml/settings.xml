@@ -1,0 +1,38 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ListPreference
+        android:defaultValue="Светлая"
+        android:dialogTitle="Тема"
+        android:entries="@array/themes"
+        android:entryValues="@array/themes"
+        android:key="theme"
+        android:title="Тема"
+        xmlns:android="http://schemas.android.com/apk/res/android" />
+
+    <ListPreference
+        android:defaultValue="1.0"
+        android:dialogTitle="Выберите размер текста"
+        android:entries="@array/textSize"
+        android:entryValues="@array/textSize"
+        android:key="textSize"
+        android:title="Размер текста"/>
+
+    <ListPreference
+        android:defaultValue="Lato"
+        android:dialogTitle="Выберите шрифт"
+        android:entries="@array/textFont"
+        android:entryValues="@array/textFont"
+        android:key="textFont"
+        android:title="Шрифт"/>
+
+    <Preference
+        android:title="@string/appVersion" />
+
+    <Preference
+        android:title="Создатель: Новиков Семён"/>
+
+    <Preference
+        android:key="github"
+        android:title="Исходный код"/>
+
+</PreferenceScreen>

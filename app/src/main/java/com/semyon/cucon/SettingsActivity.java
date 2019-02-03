@@ -1,59 +1,125 @@
 package com.semyon.cucon;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
-import android.view.MenuItem;
-import android.widget.CompoundButton;
-import android.widget.Switch;
+import android.preference.ListPreference;
+import android.preference.Preference;
+import android.preference.PreferenceActivity;
 
-public class SettingsActivity extends AppCompatActivity {
+import com.crashlytics.android.Crashlytics;
 
-    private Switch theme;
+import io.fabric.sdk.android.Fabric;
+import io.github.inflationx.calligraphy3.CalligraphyConfig;
+import io.github.inflationx.calligraphy3.CalligraphyInterceptor;
+import io.github.inflationx.viewpump.ViewPump;
+
+public class SettingsActivity extends PreferenceActivity {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onCreate(final Bundle savedInstanceState) {
+        int theme = Theme.getTheme(getBaseContext());
+        String value = "Светлая";
 
-        SharedPreferences sharedPref = this.getSharedPreferences("pref", Context.MODE_PRIVATE);
-        boolean darkTheme = sharedPref.getBoolean("dark_theme", false); // the second parameter will be fallback if the preference is not found
-        if (darkTheme){
-            setTheme(android.R.style.ThemeOverlay_Material_Dark);
+        switch (theme) {
+            case R.style.AppThemeDark:
+                setTheme(R.style.Widget_AppCompat_Toolbar);
+                value = "Тёмная";
+                break;
+            case R.style.AppThemeLight:
+                setTheme(R.style.Widget_AppCompat_Toolbar);
+                break;
+            default:
+                setTheme(R.style.Widget_AppCompat_Toolbar);
+                break;
+        }
+
+        float size = Font.getFontSize(getBaseContext());
+        byte index;
+
+        if (size == 0.75f) {
+            index = 0;
+        } else if (size == 1.0f) {
+            index = 1;
+        } else if (size == 1.25f) {
+            index = 2;
         } else {
-            setTheme(android.R.style.ThemeOverlay_Material_Light);
+            index = 3;
         }
 
-        setContentView(R.layout.activity_settings);
+        super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
 
-        theme = findViewById(R.id.theme); // preference Key
-        if (darkTheme){
-            theme.setChecked(true);
-        }
+        Font.applyFontSize(getResources().getConfiguration(), getBaseContext(), getResources());
+        addPreferencesFromResource(R.xml.settings);
 
-        theme.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        Preference github = findPreference("github");
+        ListPreference themePref = (ListPreference) findPreference("theme");
+        ListPreference textSize = (ListPreference) findPreference("textSize");
+        ListPreference textFont = (ListPreference) findPreference("textFont");
+        textFont.setValue(Font.getFont(getBaseContext()));
+        textSize.setValueIndex(index);
+        themePref.setValue(value);
+
+        textFont.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                SharedPreferences sharedPref = getBaseContext().getSharedPreferences("pref", Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPref.edit();
-                if (isChecked) {
-                    editor.putBoolean("dark_theme", true);
-                } else {
-                    editor.putBoolean("dark_theme", false);
-                }
-                editor.apply();
-                final Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                Font.setFont(getBaseContext(), newValue.toString());
+                Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
+                startActivity(intent);
+                return false;
+            }
+        });
 
-                // postDelayed нужен для того чтобы switch работал плавно
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    public void run() {
-                        // Actions to do after
-                        startActivity(intent);
-                    }
-                }, 160);
+        github.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/SemyonNovikov/cucon"));
+                startActivity(browserIntent);
+                return true;
+            }
+        });
+
+        themePref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                Theme.setTheme(newValue.toString(), getBaseContext());
+                Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
+                startActivity(intent);
+                return false;
+            }
+        });
+
+             textSize.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+
+                String size = newValue.toString();
+                float size_f = 1.0f;
+
+                switch (size) {
+                    case "Small":
+                    case "Маленький":
+                        size_f = 0.75f;
+                        break;
+                    case "Medium":
+                    case "Средний":
+                        size_f = 1.0f;
+                        break;
+                    case "Large":
+                    case "Большой":
+                        size_f = 1.25f;
+                        break;
+                    case "Very large":
+                    case "Огромный":
+                        size_f = 1.5f;
+                        break;
+                }
+
+                Font.setFontSize(getBaseContext(), size_f);
+                Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
+                startActivity(intent);
+                return true;
             }
         });
     }
@@ -61,11 +127,5 @@ public class SettingsActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        super.onBackPressed();
-        return true;
     }
 }

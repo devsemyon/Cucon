@@ -1,11 +1,9 @@
 package com.semyon.cucon.fragments;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -19,53 +17,77 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.semyon.cucon.InstantAutoComplete;
 import com.semyon.cucon.R;
 import com.semyon.cucon.SimpleTokenizer;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import io.fabric.sdk.android.Fabric;
+
 import static com.semyon.cucon.HttpRequestsKt.requestCryptoRates;
 import static com.semyon.cucon.HttpRequestsKt.requestCurrencies;
 
 public class CryptoFragment extends Fragment {
 
+    // контекст для использования во фрагменте
     private Context context;
+
+    // поля ввода валют
     private InstantAutoComplete currency1, currency2;
+
+    // поля для ввода чисел
     private EditText rate1, rate2;
-    private Float rate; // переменная для хранения курса
+
+    // переменная для хранения курса
+    private Float rate;
+
+    // текст для показа режима ("оффлайн" или null)
     private TextView mode;
+
+    // курсы валют получаем как JSON объект
     private JSONObject cryptoRates;
-    private ArrayList<String> cryptoCurrencies = new ArrayList<>();
-    private ArrayList<String> cryptoCurrencies2 = new ArrayList<>();
+
+    private ArrayList<String> cryptoCurrencies = new ArrayList<>(); // список криптовалют
+    private ArrayList<String> cryptoCurrencies2 = new ArrayList<>(); // список валют
 
     public CryptoFragment() {
-        // Required empty public constructor
+        // required empty public constructor
+        // обязательно нужен публичный конструктор
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // получаем контекст для дальнейшего использования
         context = this.getActivity();
+        Fabric.with(context, new Crashlytics());
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_crypto, container, false);
 
+        mode = view.findViewById(R.id.mode);
+
         currency1 = view.findViewById(R.id.currency1);
         currency2 = view.findViewById(R.id.currency2);
 
-        mode = view.findViewById(R.id.mode);
-
         rate1 = view.findViewById(R.id.rate1);
         rate2 = view.findViewById(R.id.rate2);
+
+        // если нет интернета то выводим диалог
+        if(!isInternet()) {
+            showDialogNoOffline();
+        }
 
         cryptoCurrencies.add("BTC");
         cryptoCurrencies.add("ETH");
@@ -80,8 +102,19 @@ public class CryptoFragment extends Fragment {
         cryptoCurrencies2.add("EUR");
 
         cryptoRates = requestCryptoRates();
-        //addAddapters(cryptoCurrencies);
+        addAddapters();
 
+        rate1.setOnKeyListener(onKeyListener);
+        rate2.setOnKeyListener(onKeyListener);
+
+        ImageButton switchCurrencies = view.findViewById(R.id.switchCurrencies);
+        switchCurrencies.setOnClickListener(switchCurrenciesClick);
+
+        return view;
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    void addAddapters(){
         ArrayAdapter<String> adapter1 = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, cryptoCurrencies);
         ArrayAdapter<String> adapter2 = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, cryptoCurrencies2);
 
@@ -95,31 +128,19 @@ public class CryptoFragment extends Fragment {
 
         currency1.setOnTouchListener(showCurrencies);
         currency2.setOnTouchListener(showCurrencies);
-
-        rate1.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                count(rate1.getId());
-                return false;
-            }
-        });
-        rate2.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                count(rate2.getId());
-                return false;
-            }
-        });
-
-        ImageButton switchCurrencies = view.findViewById(R.id.switchCurrencies);
-        switchCurrencies.setOnClickListener(switchCurrenciesClick);
-
-        return view;
     }
+
+    View.OnKeyListener onKeyListener = new View.OnKeyListener() {
+        @Override
+        public boolean onKey(View v, int keyCode, KeyEvent event) {
+            count(v.getId());
+            return false;
+        }
+    };
 
     // показываем валюты при нажатие на поля
     View.OnTouchListener showCurrencies = new View.OnTouchListener() {
-        @Override
+        @SuppressLint("ClickableViewAccessibility")
         public boolean onTouch(View v, MotionEvent event) {
             switch (v.getId()) {
                 case (R.id.currency1):
@@ -133,19 +154,10 @@ public class CryptoFragment extends Fragment {
         }
     };
 
+    // если нет интернета то выводим сообщение
     private void showDialogNoOffline() {
-        AlertDialog.Builder builder;
-        builder = new AlertDialog.Builder(context, R.style.Theme_MaterialComponents_Bridge);
-        builder.setTitle("Нет интернета!")
-                .setMessage("Чтобы использовать приложение в оффлайне вам необходимо зайти в него хотя бы один раз с интернетом.")
-                .setPositiveButton("Выйти", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        System.exit(0);
-                    }
-                })
-                .setIcon(android.R.drawable.stat_notify_error)
-                .setCancelable(false)
-                .show();
+        mode.setText("Нет интернета!");
+        Toast.makeText(context, "К сожалению оффлайн режим пока не поддреживаетася в криптовалютах.", Toast.LENGTH_LONG).show();
     }
 
     // меняем валюты местами
@@ -163,31 +175,32 @@ public class CryptoFragment extends Fragment {
                     rate1.setText(r2);
                     rate2.setText(r1);
 
-                } catch (Exception ignored) {
-                }
+                } catch (Exception ignored) { }
             }
         }
     };
 
     // метод пересчитавания курса/значения
     private void count(int id) {
+        // если поменялось второе поле для ввода суммы
         if (id == rate2.getId()) {
+            // проверка на то что все нужные поля не пустые
             if (rate2.getText().length() != 0 && currency1.getText().length() != 0 && currency2.getText().length() != 0) {
                 try {
+                    // считаем результат для первого поля по курсу из переменной rate
                     Float.valueOf(rate2.getText().toString());
                     rate1.setText(String.valueOf(Float.valueOf(rate2.getText().toString()) / rate));
-                } catch (Exception ignored) {
-                }
+                } catch (Exception ignored) {}
             }
+            // если поменялась какая-либо валюта
         } else if (id == currency1.getId() || id == currency2.getId()) {
-
+            // любая криптовалюта содержит от 3 до 5 букв
             if (currency1.getText().length() >= 3 && currency2.getText().length() >= 3) {
 
                 String crypto1 = currency1.getText().toString().toUpperCase();
                 String crypto2 = currency2.getText().toString().toUpperCase();
 
                 if (isInternet()) {
-
                     try {
                         rate = (float) cryptoRates.getJSONObject(crypto1).getDouble(crypto2);
                     } catch (JSONException e) {
@@ -197,6 +210,8 @@ public class CryptoFragment extends Fragment {
                     //editor.apply();
                     mode.setText(null);
                 } else {
+                    // TODO добавить поддержку оффлайн режима
+                    rate = 0f;
                     mode.setText("Оффлайн режим недоступен у криптовалют");
                     //rate = sharedPref.getFloat(pair, 0);
                     //if (rate == 0) {
@@ -207,7 +222,7 @@ public class CryptoFragment extends Fragment {
                 if (rate != null) {
                     rate2.setText(String.valueOf(rate * Float.valueOf(rate1.getText().toString())));
                 } else {
-                    Toast.makeText(getActivity().getApplicationContext(), "Произошла ошибка, возможно превышен лимит!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, "Произошла ошибка, возможно превышен лимит!", Toast.LENGTH_LONG).show();
                 }
             }
         } else {
@@ -223,8 +238,8 @@ public class CryptoFragment extends Fragment {
 
     // проверка интернета на устройстве
     private boolean isInternet() {
-        Iterator<String> t = requestCurrencies();
-        return t != null;
+        JSONObject object = requestCryptoRates();
+        return object != null;
     }
 
     class GenericTextWatcher implements TextWatcher {
@@ -241,7 +256,7 @@ public class CryptoFragment extends Fragment {
         public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
             switch (view.getId()) {
                 case R.id.currency1:
-                    if (currency1.getText().length() >= 3) {
+                    if (currency1.getText().length() >= 5) {
                         if (cryptoCurrencies.contains(currency1.getText().toString().toUpperCase())) {
                             count(view.getId());
                         } else {

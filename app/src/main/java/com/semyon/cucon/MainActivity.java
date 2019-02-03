@@ -1,5 +1,6 @@
 package com.semyon.cucon;
 
+import android.content.Context;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -10,13 +11,15 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.StrictMode;
 import android.view.MenuInflater;
 import android.widget.Toast;
+
+import com.crashlytics.android.Crashlytics;
+import io.fabric.sdk.android.Fabric;
+import io.github.inflationx.viewpump.ViewPumpContextWrapper;
 
 import java.util.ArrayList;
 import com.semyon.cucon.fragments.*;
@@ -27,32 +30,32 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
 
+        Font.applyFontSize(getResources().getConfiguration(), getBaseContext(), getResources());
+
+        // Нужно для использования интернета
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
-        SharedPreferences sharedPref = this.getSharedPreferences("pref", Context.MODE_PRIVATE);
-
         // узнаём какая тема задана в настройках
-        boolean darkTheme = sharedPref.getBoolean("dark_theme", false); // the second parameter will be fallback if the preference is not found
-        if (darkTheme) {
-            setTheme(android.R.style.ThemeOverlay_Material_Dark);
-        } else {
-            setTheme(android.R.style.ThemeOverlay_Material_Light);
-        }
+        setTheme(Theme.getTheme(this));
 
         setContentView(R.layout.activity_tabs);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
         ViewPager viewPager = findViewById(R.id.viewpager);
         setupViewPager(viewPager);
 
         TabLayout tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(ViewPumpContextWrapper.wrap(newBase));
     }
 
     private void setupViewPager(ViewPager viewPager) {
