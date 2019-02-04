@@ -10,9 +10,6 @@ import android.preference.PreferenceActivity;
 import com.crashlytics.android.Crashlytics;
 
 import io.fabric.sdk.android.Fabric;
-import io.github.inflationx.calligraphy3.CalligraphyConfig;
-import io.github.inflationx.calligraphy3.CalligraphyInterceptor;
-import io.github.inflationx.viewpump.ViewPump;
 
 public class SettingsActivity extends PreferenceActivity {
 
@@ -20,6 +17,7 @@ public class SettingsActivity extends PreferenceActivity {
     protected void onCreate(final Bundle savedInstanceState) {
         int theme = Theme.getTheme(getBaseContext());
         String value = "Светлая";
+        Language.set(this);
 
         switch (theme) {
             case R.style.AppThemeDark:
@@ -48,6 +46,7 @@ public class SettingsActivity extends PreferenceActivity {
         }
 
         super.onCreate(savedInstanceState);
+
         Fabric.with(this, new Crashlytics());
 
         Font.applyFontSize(getResources().getConfiguration(), getBaseContext(), getResources());
@@ -57,9 +56,21 @@ public class SettingsActivity extends PreferenceActivity {
         ListPreference themePref = (ListPreference) findPreference("theme");
         ListPreference textSize = (ListPreference) findPreference("textSize");
         ListPreference textFont = (ListPreference) findPreference("textFont");
+        ListPreference language = (ListPreference) findPreference("language");
+        language.setValue(Language.getFull(this));
         textFont.setValue(Font.getFont(getBaseContext()));
         textSize.setValueIndex(index);
         themePref.setValue(value);
+
+        language.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                Language.update(newValue.toString(), getBaseContext());
+                Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
+                startActivity(intent);
+                return false;
+            }
+        });
 
         textFont.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
@@ -90,7 +101,8 @@ public class SettingsActivity extends PreferenceActivity {
             }
         });
 
-             textSize.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+
+        textSize.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
 

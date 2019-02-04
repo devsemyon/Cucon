@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="appVersion">Версия: 0.1.3 BETA</string>
+    <string name="choose_language">Выберите язык</string>
+    <string name="cryptocurrency">Криптовалюта</string>
+    <string name="fiat">Фиат</string>
+    <string name="language">Язык</string>
+    <string name="title_activity_settings">Настройки</string>
+    <string name="choose_currency">Выберите валюту</string>
+    <string name="sourceCode">Исходный код</string>
+    <string name="creator">Создатель: Новиков Семён</string>
+    <string name="font">Шрифт</string>
+    <string name="textSize">Размер текста</string>
+    <string name="theme">Тема</string>
+    <string name="clickAgainToExit">Нажмите еще раз для выхода</string>
+</resources>

@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.res.AssetManager;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -22,7 +24,9 @@ import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.semyon.cucon.Font;
+import com.semyon.cucon.FontChangeCrawler;
 import com.semyon.cucon.InstantAutoComplete;
+import com.semyon.cucon.Language;
 import com.semyon.cucon.R;
 import com.semyon.cucon.SimpleTokenizer;
 
@@ -34,9 +38,6 @@ import java.util.Iterator;
 import java.util.Set;
 
 import io.fabric.sdk.android.Fabric;
-import io.github.inflationx.calligraphy3.CalligraphyConfig;
-import io.github.inflationx.calligraphy3.CalligraphyInterceptor;
-import io.github.inflationx.viewpump.ViewPump;
 
 import static com.semyon.cucon.HttpRequestsKt.requestCurrencies;
 import static com.semyon.cucon.HttpRequestsKt.requestRate;
@@ -55,6 +56,16 @@ public class FiatFragment extends Fragment {
 
     public FiatFragment() {
         // Required empty public constructor
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState)
+    {
+        super.onActivityCreated(savedInstanceState);
+        context = this.getActivity();
+        FontChangeCrawler fontChanger = new FontChangeCrawler(context.getAssets(), Font.getFont(context));
+        fontChanger.replaceFonts((ViewGroup) this.getView());
+        Language.set(getContext());
     }
 
     @Override

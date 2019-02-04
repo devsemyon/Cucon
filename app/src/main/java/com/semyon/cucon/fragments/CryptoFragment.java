@@ -18,7 +18,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
+import com.semyon.cucon.Font;
+import com.semyon.cucon.FontChangeCrawler;
 import com.semyon.cucon.InstantAutoComplete;
+import com.semyon.cucon.Language;
 import com.semyon.cucon.R;
 import com.semyon.cucon.SimpleTokenizer;
 
@@ -60,6 +63,16 @@ public class CryptoFragment extends Fragment {
     public CryptoFragment() {
         // required empty public constructor
         // обязательно нужен публичный конструктор
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState)
+    {
+        super.onActivityCreated(savedInstanceState);
+        context = this.getActivity();
+        FontChangeCrawler fontChanger = new FontChangeCrawler(context.getAssets(), Font.getFont(context));
+        fontChanger.replaceFonts((ViewGroup) this.getView());
+        Language.set(getContext());
     }
 
     @Override

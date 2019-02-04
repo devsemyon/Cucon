@@ -1,31 +1,34 @@
 package com.semyon.cucon;
 
-import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.StrictMode;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
-import android.view.MenuItem;
-import android.content.Intent;
-import android.os.Handler;
-import android.os.StrictMode;
 import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
-import io.fabric.sdk.android.Fabric;
-import io.github.inflationx.viewpump.ViewPumpContextWrapper;
+import com.semyon.cucon.fragments.CryptoFragment;
+import com.semyon.cucon.fragments.FiatFragment;
 
 import java.util.ArrayList;
-import com.semyon.cucon.fragments.*;
 import java.util.List;
 
+import io.fabric.sdk.android.Fabric;
+
 public class MainActivity extends AppCompatActivity {
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +36,8 @@ public class MainActivity extends AppCompatActivity {
         Fabric.with(this, new Crashlytics());
 
         Font.applyFontSize(getResources().getConfiguration(), getBaseContext(), getResources());
+
+        Language.set(getBaseContext());
 
         // Нужно для использования интернета
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -54,14 +59,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(ViewPumpContextWrapper.wrap(newBase));
+    public void setContentView(View view)
+    {
+        super.setContentView(view);
+        FontChangeCrawler fontChanger = new FontChangeCrawler(getAssets(), Font.getFont(this));
+        fontChanger.replaceFonts((ViewGroup)this.findViewById(android.R.id.content));
     }
 
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new FiatFragment(), "Фиат");
-        adapter.addFragment(new CryptoFragment(), "Криптовалюта");
+        adapter.addFragment(new FiatFragment(), getString(R.string.fiat));
+        adapter.addFragment(new CryptoFragment(), getString(R.string.cryptocurrency));
         viewPager.setAdapter(adapter);
     }
 
@@ -129,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         this.doubleBackToExitPressedOnce = true;
-        Toast.makeText(this, "Нажмите еще раз для выхода", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, getString(R.string.clickAgainToExit), Toast.LENGTH_SHORT).show();
 
         new Handler().postDelayed(new Runnable() {
             @Override

@@ -6,7 +6,7 @@
         android:entries="@array/themes"
         android:entryValues="@array/themes"
         android:key="theme"
-        android:title="Тема"
+        android:title="@string/theme"
         xmlns:android="http://schemas.android.com/apk/res/android" />
 
     <ListPreference
@@ -15,7 +15,7 @@
         android:entries="@array/textSize"
         android:entryValues="@array/textSize"
         android:key="textSize"
-        android:title="Размер текста"/>
+        android:title="@string/textSize"/>
 
     <ListPreference
         android:defaultValue="Lato"
@@ -23,16 +23,23 @@
         android:entries="@array/textFont"
         android:entryValues="@array/textFont"
         android:key="textFont"
-        android:title="Шрифт"/>
+        android:title="@string/font"/>
+
+    <ListPreference
+        android:dialogTitle="@string/choose_language"
+        android:entries="@array/languages"
+        android:entryValues="@array/languages"
+        android:key="language"
+        android:title="@string/language" />
 
     <Preference
         android:title="@string/appVersion" />
 
     <Preference
-        android:title="Создатель: Новиков Семён"/>
+        android:title="@string/creator"/>
 
     <Preference
         android:key="github"
-        android:title="Исходный код"/>
+        android:title="@string/sourceCode"/>
 
 </PreferenceScreen>

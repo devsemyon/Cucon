@@ -17,7 +17,7 @@ public class Font {
         editor.apply(); // сохраняем изменения
     }
 
-    static String getFont(Context context){
+    public static String getFont(Context context){
         SharedPreferences prefs = context.getSharedPreferences("font", MODE_PRIVATE);
         return prefs.getString("font", "Lato");
     }
