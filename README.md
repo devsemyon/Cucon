@@ -1,2 +1,3 @@
-# cucon
-Simple currency converter
+# Cucon
+Simple fiat & crypto converter
+ 
