@@ -30,12 +30,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import io.fabric.sdk.android.Fabric;
 
+import static com.semyon.cucon.HttpRequestsKt.isInternet;
 import static com.semyon.cucon.HttpRequestsKt.requestCryptoRates;
-import static com.semyon.cucon.HttpRequestsKt.requestCurrencies;
 
 public class CryptoFragment extends Fragment {
 
@@ -98,7 +97,7 @@ public class CryptoFragment extends Fragment {
         rate2 = view.findViewById(R.id.rate2);
 
         // если нет интернета то выводим диалог
-        if(!isInternet()) {
+        if (!isInternet(context)) {
             showDialogNoOffline();
         }
 
@@ -213,7 +212,7 @@ public class CryptoFragment extends Fragment {
                 String crypto1 = currency1.getText().toString().toUpperCase();
                 String crypto2 = currency2.getText().toString().toUpperCase();
 
-                if (isInternet()) {
+                if (isInternet(context)) {
                     try {
                         rate = (float) cryptoRates.getJSONObject(crypto1).getDouble(crypto2);
                     } catch (JSONException e) {
@@ -247,12 +246,6 @@ public class CryptoFragment extends Fragment {
                 }
             }
         }
-    }
-
-    // проверка интернета на устройстве
-    private boolean isInternet() {
-        JSONObject object = requestCryptoRates();
-        return object != null;
     }
 
     class GenericTextWatcher implements TextWatcher {

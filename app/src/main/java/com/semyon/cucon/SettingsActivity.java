@@ -21,14 +21,14 @@ public class SettingsActivity extends PreferenceActivity {
 
         switch (theme) {
             case R.style.AppThemeDark:
-                setTheme(R.style.Widget_AppCompat_Toolbar);
+                setTheme(R.style.SettingsThemeDark);
                 value = "Тёмная";
                 break;
             case R.style.AppThemeLight:
-                setTheme(R.style.Widget_AppCompat_Toolbar);
+                setTheme(R.style.SettingsThemeLight);
                 break;
             default:
-                setTheme(R.style.Widget_AppCompat_Toolbar);
+                setTheme(R.style.SettingsThemeLight);
                 break;
         }
 

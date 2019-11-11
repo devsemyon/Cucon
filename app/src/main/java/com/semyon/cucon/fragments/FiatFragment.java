@@ -4,8 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.content.res.AssetManager;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -39,6 +37,7 @@ import java.util.Set;
 
 import io.fabric.sdk.android.Fabric;
 
+import static com.semyon.cucon.HttpRequestsKt.isInternet;
 import static com.semyon.cucon.HttpRequestsKt.requestCurrencies;
 import static com.semyon.cucon.HttpRequestsKt.requestRate;
 
@@ -92,7 +91,7 @@ public class FiatFragment extends Fragment {
         sharedPref = getContext().getSharedPreferences("pref", Context.MODE_PRIVATE);
         editor = sharedPref.edit();
 
-        if (!isInternet()) {
+        if (!isInternet(context)) {
             Set<String> set = sharedPref.getStringSet("currencies", null);
             if (set == null || set.isEmpty()) {
                 showDialogNoOffline();
@@ -216,7 +215,7 @@ public class FiatFragment extends Fragment {
             if (currency1.getText().length() == 3 && currency2.getText().length() == 3) {
 
                 String pair = currency1.getText().toString().toUpperCase() + "_" + currency2.getText().toString().toUpperCase();
-                if (isInternet()) {
+                if (isInternet(context)) {
                     rate = requestRate(pair);
                     editor.putFloat(pair, rate);
                     editor.apply();
@@ -244,12 +243,6 @@ public class FiatFragment extends Fragment {
                 }
             }
         }
-    }
-
-    // проверка интернета на устройстве
-    private boolean isInternet() {
-        Iterator<String> t = requestCurrencies();
-        return t != null;
     }
 
     @SuppressLint("ClickableViewAccessibility")

@@ -1,8 +1,9 @@
 package com.semyon.cucon
 
+import android.content.Context
+import android.net.ConnectivityManager
 import android.util.Log
 import org.json.JSONObject
-import java.lang.Exception
 import java.net.HttpURLConnection
 import java.net.URI
 
@@ -21,26 +22,32 @@ fun requestRate(pair: String): Float? {
 }
 
 fun requestCurrencies(): Iterator<String>? {
-    var currencies: Iterator<String>
+    val currencies: Iterator<String>
     val result = request("https://free.currencyconverterapi.com/api/v6/currencies")
-    try {
+    return try {
         val result2 = result!!.getJSONObject("results")
         currencies = result2.keys()
-        return currencies
+        currencies
     } catch (e: Exception) {
         Log.e("Error: ", e.toString())
-        return null
+        null
     }
 }
 
 fun request(url: String): JSONObject? {
-    try {
+    return try {
         val connection = URI(url).toURL().openConnection() as HttpURLConnection
         connection.connect()
         val text = connection.inputStream.use { it.reader().use { reader -> reader.readText() } }
-        return (JSONObject(text))
+        (JSONObject(text))
     } catch (e: Exception) {
         Log.e("Error: ", e.toString())
-        return null
+        null
     }
+}
+
+fun isInternet(context: Context): Boolean {
+    val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    val networkInfo = connectivityManager.activeNetworkInfo
+    return networkInfo != null && networkInfo.isConnected
 }
