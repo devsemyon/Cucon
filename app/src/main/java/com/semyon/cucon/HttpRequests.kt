@@ -7,12 +7,13 @@ import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URI
 
-fun requestCryptoRates(): JSONObject?{
-    return(request("https://min-api.cryptocompare.com/data/pricemulti?fsyms=BTC,ETH,DASH,ZEC,LTC,WAVES,EOS&tsyms=USD,EUR,RUB&api_key=$apiCryptoKey"))
+fun requestCryptoRates(): JSONObject? {
+    return (request("https://min-api.cryptocompare.com/data/pricemulti?fsyms=BTC,ETH,DASH,ZEC,LTC,WAVES,EOS&tsyms=USD,EUR,RUB&api_key=" + com.semyon.cucon.BuildConfig.cryptocompare_key))
 }
 
 fun requestRate(pair: String): Float? {
-    val result = request("https://free.currencyconverterapi.com/api/v6/convert?q=" + pair + "&compact=ultra")
+    val result =
+        request("https://free.currencyconverterapi.com/api/v6/convert?q=" + pair + "&compact=ultra&apiKey=" + com.semyon.cucon.BuildConfig.currencyconverterapi_key)
     try {
         return result!!.get(pair).toString().toFloat()
     } catch (e: Exception) {
@@ -23,7 +24,8 @@ fun requestRate(pair: String): Float? {
 
 fun requestCurrencies(): Iterator<String>? {
     val currencies: Iterator<String>
-    val result = request("https://free.currencyconverterapi.com/api/v6/currencies")
+    val result =
+        request("https://free.currencyconverterapi.com/api/v6/currencies?apiKey=" + com.semyon.cucon.BuildConfig.currencyconverterapi_key)
     return try {
         val result2 = result!!.getJSONObject("results")
         currencies = result2.keys()
@@ -47,7 +49,8 @@ fun request(url: String): JSONObject? {
 }
 
 fun isInternet(context: Context): Boolean {
-    val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    val connectivityManager =
+        context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     val networkInfo = connectivityManager.activeNetworkInfo
     return networkInfo != null && networkInfo.isConnected
 }

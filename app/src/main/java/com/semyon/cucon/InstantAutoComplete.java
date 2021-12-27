@@ -2,8 +2,9 @@ package com.semyon.cucon;
 
 import android.content.Context;
 import android.graphics.Rect;
-import android.support.v7.widget.AppCompatMultiAutoCompleteTextView;
 import android.util.AttributeSet;
+
+import androidx.appcompat.widget.AppCompatMultiAutoCompleteTextView;
 
 public class InstantAutoComplete extends AppCompatMultiAutoCompleteTextView {
 

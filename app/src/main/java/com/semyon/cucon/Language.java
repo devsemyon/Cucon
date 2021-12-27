@@ -5,7 +5,9 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.preference.PreferenceManager;
-import android.support.v4.os.ConfigurationCompat;
+
+import androidx.core.os.ConfigurationCompat;
+
 import java.util.Locale;
 
 public class Language {
@@ -24,7 +26,7 @@ public class Language {
 
     // функция для записи в sharedPref нового языка
     static void update(String language, Context context) {
-        if (language.toLowerCase().contains("ru") || language.toLowerCase().contains("ру")){
+        if (language.toLowerCase().contains("ru") || language.toLowerCase().contains("ру")) {
             language = "ru";
         } else {
             language = "en";
@@ -37,9 +39,9 @@ public class Language {
     }
 
     // получение текущего языка из sharedPref
-    private static String get(Context context){
+    private static String get(Context context) {
         language_pref = PreferenceManager.getDefaultSharedPreferences(context);
-        if (language_pref.contains(APP_LANGUAGE)){
+        if (language_pref.contains(APP_LANGUAGE)) {
             return language_pref.getString(APP_LANGUAGE, "ru");
         } else {
             String s = ConfigurationCompat.getLocales(Resources.getSystem().getConfiguration()).toString();
@@ -49,11 +51,11 @@ public class Language {
     }
 
     // получения текущего языка в полном формате
-    static String getFull(Context context){
+    static String getFull(Context context) {
         String language = get(context);
-        if (language.equalsIgnoreCase("ru") || language.equalsIgnoreCase("русский") || language.contains("ru")){
+        if (language.equalsIgnoreCase("ru") || language.equalsIgnoreCase("русский") || language.contains("ru")) {
             language = "Русский";
-        }else {
+        } else {
             language = "English";
         }
         return language;

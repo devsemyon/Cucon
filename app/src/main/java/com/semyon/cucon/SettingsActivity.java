@@ -7,9 +7,6 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 
-import com.crashlytics.android.Crashlytics;
-
-import io.fabric.sdk.android.Fabric;
 
 public class SettingsActivity extends PreferenceActivity {
 
@@ -46,8 +43,6 @@ public class SettingsActivity extends PreferenceActivity {
         }
 
         super.onCreate(savedInstanceState);
-
-        Fabric.with(this, new Crashlytics());
 
         Font.applyFontSize(getResources().getConfiguration(), getBaseContext(), getResources());
         addPreferencesFromResource(R.xml.settings);

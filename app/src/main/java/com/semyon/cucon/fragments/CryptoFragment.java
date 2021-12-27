@@ -3,7 +3,8 @@ package com.semyon.cucon.fragments;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -17,7 +18,6 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.crashlytics.android.Crashlytics;
 import com.semyon.cucon.Font;
 import com.semyon.cucon.FontChangeCrawler;
 import com.semyon.cucon.InstantAutoComplete;
@@ -31,7 +31,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-import io.fabric.sdk.android.Fabric;
 
 import static com.semyon.cucon.HttpRequestsKt.isInternet;
 import static com.semyon.cucon.HttpRequestsKt.requestCryptoRates;
@@ -79,7 +78,6 @@ public class CryptoFragment extends Fragment {
         super.onCreate(savedInstanceState);
         // получаем контекст для дальнейшего использования
         context = this.getActivity();
-        Fabric.with(context, new Crashlytics());
     }
 
     @Override

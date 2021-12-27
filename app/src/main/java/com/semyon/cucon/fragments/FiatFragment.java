@@ -5,8 +5,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
+//import android.support.v4.app.Fragment;
+//import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -20,7 +20,6 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.crashlytics.android.Crashlytics;
 import com.semyon.cucon.Font;
 import com.semyon.cucon.FontChangeCrawler;
 import com.semyon.cucon.InstantAutoComplete;
@@ -35,11 +34,12 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import io.fabric.sdk.android.Fabric;
-
 import static com.semyon.cucon.HttpRequestsKt.isInternet;
 import static com.semyon.cucon.HttpRequestsKt.requestCurrencies;
 import static com.semyon.cucon.HttpRequestsKt.requestRate;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
 
 public class FiatFragment extends Fragment {
 
@@ -58,8 +58,7 @@ public class FiatFragment extends Fragment {
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState)
-    {
+    public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         context = this.getActivity();
         FontChangeCrawler fontChanger = new FontChangeCrawler(context.getAssets(), Font.getFont(context));
@@ -69,9 +68,8 @@ public class FiatFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);;
+        super.onCreate(savedInstanceState);
         context = this.getActivity();
-        Fabric.with(context, new Crashlytics());
     }
 
     @Override

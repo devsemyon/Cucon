@@ -59,3 +59,6 @@ fastlane/readme.md
 app/buildconfigs.xml
 /app/src/main/res/values/configs.xml
 app/build
+
+
+apikey.properties

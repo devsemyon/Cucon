@@ -2,3 +2,12 @@
 Simple fiat & crypto converter with dark theme support
 
 <img src="https://github.com/devsemyon/Cucon/blob/master/screen1.png" alt="drawing" height="555"/> <img src="https://github.com/devsemyon/Cucon/blob/master/screen2.png" alt="drawing" height="555"/>
+
+# API keys
+
+example file `apikey.properties`:
+
+```yaml
+currencyconverterapi_key=""
+cryptocompare_key=""
+```
