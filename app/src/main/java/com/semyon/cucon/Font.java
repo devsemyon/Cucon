@@ -6,6 +6,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
+
 import static android.content.Context.MODE_PRIVATE;
 import static android.content.Context.WINDOW_SERVICE;
 
@@ -17,7 +18,7 @@ public class Font {
         editor.apply(); // сохраняем изменения
     }
 
-    public static String getFont(Context context){
+    public static String getFont(Context context) {
         SharedPreferences prefs = context.getSharedPreferences("font", MODE_PRIVATE);
         return prefs.getString("font", "Lato");
     }

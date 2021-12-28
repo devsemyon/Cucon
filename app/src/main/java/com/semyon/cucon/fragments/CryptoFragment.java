@@ -3,10 +3,12 @@ package com.semyon.cucon.fragments;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
-import androidx.fragment.app.FragmentActivity;
+
 import androidx.fragment.app.Fragment;
+
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -30,10 +32,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 
 import static com.semyon.cucon.HttpRequestsKt.isInternet;
+import static com.semyon.cucon.HttpRequestsKt.requestCryptoCurrencies;
 import static com.semyon.cucon.HttpRequestsKt.requestCryptoRates;
+import static com.semyon.cucon.HttpRequestsKt.requestCurrencies;
 
 public class CryptoFragment extends Fragment {
 
@@ -64,8 +69,7 @@ public class CryptoFragment extends Fragment {
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState)
-    {
+    public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         context = this.getActivity();
         FontChangeCrawler fontChanger = new FontChangeCrawler(context.getAssets(), Font.getFont(context));
@@ -99,19 +103,25 @@ public class CryptoFragment extends Fragment {
             showDialogNoOffline();
         }
 
-        cryptoCurrencies.add("BTC");
-        cryptoCurrencies.add("ETH");
-        cryptoCurrencies.add("LTC");
-        cryptoCurrencies.add("DASH");
-        cryptoCurrencies.add("EOS");
-        cryptoCurrencies.add("WAVES");
-        cryptoCurrencies.add("ZEC");
+        Iterator<String> cryptoCurrenciesIterator = requestCryptoCurrencies();
+        assert cryptoCurrenciesIterator != null;
+        while (cryptoCurrenciesIterator.hasNext()) {
+            cryptoCurrencies.add(cryptoCurrenciesIterator.next());
+        }
+
+//        cryptoCurrencies.add("BTC");
+//        cryptoCurrencies.add("ETH");
+//        cryptoCurrencies.add("LTC");
+//        cryptoCurrencies.add("DASH");
+//        cryptoCurrencies.add("EOS");
+//        cryptoCurrencies.add("WAVES");
+//        cryptoCurrencies.add("ZEC");
 
         cryptoCurrencies2.add("USD");
         cryptoCurrencies2.add("RUB");
         cryptoCurrencies2.add("EUR");
 
-        cryptoRates = requestCryptoRates();
+//        cryptoRates = requestCryptoRates();
         addAddapters();
 
         rate1.setOnKeyListener(onKeyListener);
@@ -124,7 +134,7 @@ public class CryptoFragment extends Fragment {
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    void addAddapters(){
+    void addAddapters() {
         ArrayAdapter<String> adapter1 = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, cryptoCurrencies);
         ArrayAdapter<String> adapter2 = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, cryptoCurrencies2);
 
@@ -185,7 +195,8 @@ public class CryptoFragment extends Fragment {
                     rate1.setText(r2);
                     rate2.setText(r1);
 
-                } catch (Exception ignored) { }
+                } catch (Exception ignored) {
+                }
             }
         }
     };
@@ -200,7 +211,8 @@ public class CryptoFragment extends Fragment {
                     // считаем результат для первого поля по курсу из переменной rate
                     Float.valueOf(rate2.getText().toString());
                     rate1.setText(String.valueOf(Float.valueOf(rate2.getText().toString()) / rate));
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) {
+                }
             }
             // если поменялась какая-либо валюта
         } else if (id == currency1.getId() || id == currency2.getId()) {
@@ -212,6 +224,8 @@ public class CryptoFragment extends Fragment {
 
                 if (isInternet(context)) {
                     try {
+                        cryptoRates = requestCryptoRates(crypto1);
+                        Log.e("CURRENT VALUE", crypto1);
                         rate = (float) cryptoRates.getJSONObject(crypto1).getDouble(crypto2);
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -220,9 +234,8 @@ public class CryptoFragment extends Fragment {
                     //editor.apply();
                     mode.setText(null);
                 } else {
-                    // TODO добавить поддержку оффлайн режима
                     rate = 0f;
-                    mode.setText("Оффлайн режим недоступен у криптовалют");
+                    mode.setText("Оффлайн режим недоступен");
                     //rate = sharedPref.getFloat(pair, 0);
                     //if (rate == 0) {
                     //    Toast.makeText(getActivity().getApplicationContext(), "Эта валютная пара не загружена в оффлайн!", Toast.LENGTH_LONG).show();
@@ -258,6 +271,8 @@ public class CryptoFragment extends Fragment {
         }
 
         public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            cryptoRates = requestCryptoRates(currency1.getText().toString());
+            Log.e("CURRENT VALUE", currency1.getText().toString());
             switch (view.getId()) {
                 case R.id.currency1:
                     if (currency1.getText().length() >= 5) {

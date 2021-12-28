@@ -7,8 +7,8 @@ import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URI
 
-fun requestCryptoRates(): JSONObject? {
-    return (request("https://min-api.cryptocompare.com/data/pricemulti?fsyms=BTC,ETH,DASH,ZEC,LTC,WAVES,EOS&tsyms=USD,EUR,RUB&api_key=" + com.semyon.cucon.BuildConfig.cryptocompare_key))
+fun requestCryptoRates(cryptoPair: String): JSONObject? {
+    return (request("https://min-api.cryptocompare.com/data/pricemulti?fsyms=" + cryptoPair + "&tsyms=USD,EUR,RUB&api_key=" + com.semyon.cucon.BuildConfig.cryptocompare_key))
 }
 
 fun requestRate(pair: String): Float? {
@@ -34,6 +34,25 @@ fun requestCurrencies(): Iterator<String>? {
         Log.e("Error: ", e.toString())
         null
     }
+}
+
+fun requestCryptoCurrencies(): Iterator<String>? {
+    val currencies: Iterator<String>?
+    val result =
+        request("https://min-api.cryptocompare.com/data/v4/all/exchanges?api_key=" + BuildConfig.cryptocompare_key)
+    try {
+        val result2 =
+            result!!.getJSONObject("Data").getJSONObject("exchanges").getJSONObject("Exmo")
+                .getJSONObject("pairs")
+        currencies = result2.keys()
+//        currencies.forEach {
+//            println(it)
+//        }
+        return currencies
+    } catch (e: Exception) {
+        println(e.message.toString())
+    }
+    return null
 }
 
 fun request(url: String): JSONObject? {
